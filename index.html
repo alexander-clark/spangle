@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Spangle demo</title>
+    <link rel="stylesheet" href="css/rateit.css">
+    <script src="javascript/jquery-1.9.1.min.js"></script>
+    <script src="javascript/jquery.rateit.min.js"></script>
+  </head>
+  <body>
+    <div id="products">
+       <div style="float:right; width:350px; border:1px solid #ccc; padding:1em;">
+         <strong>Server response:</strong>
+         <ul id="response">
+      
+         </ul>
+         </div>
+         <ul>
+             <li><h4>Product X (id: 312)</h4>
+             RateIt: <div data-productid="312" class="rateit"></div>
+             </li>
+             <li><h4>Product Y (id: 423)</h4>
+             RateIt: <div data-productid="423" class="rateit"></div></li>
+             <li><h4>Product Z (id: 653)</h4>
+             RateIt: <div data-productid="653" class="rateit"></div>
+             </li>
+         </ul>
+    
+     </div>
+ 
+     <script type ="text/javascript">
+         //we bind only to the rateit controls within the products div
+         $('#products .rateit').bind('rated reset', function (e) {
+             var ri = $(this);
+ 
+             //if the use pressed reset, it will get value: 0 (to be compatible with the HTML range control), we could check if e.type == 'reset', and then set the value to  null .
+             var value = ri.rateit('value');
+             var productID = ri.data('productid'); // if the product id was in some hidden field: ri.closest('li').find('input[name="productid"]').val()
+ 
+             //maybe we want to disable voting?
+             //ri.rateit('readonly', true);
+ 
+             $.ajax({
+                 url: 'rateit.aspx', //your server side script
+                 data: { id: productID, value: value }, //our data
+                 type: 'POST',
+                 success: function (data) {
+                     $('#response').append('<li>' + data + '</li>');
+ 
+                 },
+                 error: function (jxhr, msg, err) {
+                     $('#response').append('<li style="color:red">' + msg + '</li>');
+                 }
+             });
+         });
+     </script>
+   </body>
+ </html>
